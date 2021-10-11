@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Fibonacci.Tests
@@ -8,8 +10,13 @@ namespace Fibonacci.Tests
         [Fact]
         public async Task Execute4ShouldReturnX()
         {
-            var result = await Compute.ExecuteAsync(new[]{"6"});
-            Assert.Equal(8, result[0]);
+            var builder = new DbContextOptionsBuilder<FibonacciDataContext>();
+            var dataBaseName = Guid.NewGuid().ToString();
+            builder.UseInMemoryDatabase(dataBaseName);
+            var options = builder.Options;
+            var fibonacciDataContext = new FibonacciDataContext(options);
+            await fibonacciDataContext.Database.EnsureCreatedAsync(); 
+
         }
     }
 }
